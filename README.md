@@ -17,7 +17,8 @@ This is a simple WebRTC-based video calling application built with React, Socket
 ### 1. Clone the repository
 ```sh
 git clone https://github.com/meabhiarya1/video-calling-app-Shanvia-Tech-Solutions.git
-cd video-call-app
+cd video-calling-app-Shanvia-Tech-Solutions
+
 ```
 
 ### 2. Install dependencies
