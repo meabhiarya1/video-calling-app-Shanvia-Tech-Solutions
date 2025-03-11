@@ -15,13 +15,31 @@ const Room = () => {
   }, []);
 
   const handleCallUser = useCallback(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: true,
-    });
-    const offer = await peer.getOffer();
-    socket.emit("user:call", { to: remoteSocketId, offer });
-    setMyStream(stream);
+    try {
+      // Request user media
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
+
+      if (!stream) {
+        throw new Error("Failed to access media devices.");
+      }
+
+      // Generate an offer
+      const offer = await peer.getOffer();
+
+      if (!offer) {
+        throw new Error("Failed to generate an offer.");
+      }
+
+      // Send the call request
+      socket.emit("user:call", { to: remoteSocketId, offer });
+      setMyStream(stream);
+    } catch (error) {
+      console.error("Error initiating call:", error);
+      alert(`Error initiating call: ${error.message}`);
+    }
   }, [remoteSocketId, socket]);
 
   const handleIncommingCall = useCallback(
