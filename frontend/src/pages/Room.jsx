@@ -55,17 +55,51 @@ const Room = () => {
   );
 
   const handleNegoNeeded = useCallback(async () => {
-    const offer = await peer.getOffer();
-    socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+    try {
+      if (!remoteSocketId) {
+        throw new Error(
+          "Remote socket ID is missing. Cannot initiate negotiation."
+        );
+      }
+
+      const offer = await peer.getOffer();
+
+      if (!offer) {
+        throw new Error("Failed to generate an offer for negotiation.");
+      }
+
+      socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+
+      console.log("Negotiation needed. Offer sent to", remoteSocketId);
+    } catch (error) {
+      console.error("Error in handleNegoNeeded:", error);
+    }
   }, [remoteSocketId, socket]);
 
   const handleNegoNeededIncoming = useCallback(
     async ({ from, offer }) => {
-      const ans = await peer.getAnswer(offer);
-      socket.emit("peer:nego:done", {
-        to: from,
-        ans,
-      });
+      try {
+        if (!offer) {
+          throw new Error("Received an invalid offer for negotiation.");
+        }
+
+        const ans = await peer.getAnswer(offer);
+
+        if (!ans) {
+          throw new Error(
+            "Failed to generate an answer for the received offer."
+          );
+        }
+
+        socket.emit("peer:nego:done", {
+          to: from,
+          ans,
+        });
+
+        console.log("Negotiation answer sent successfully.");
+      } catch (error) {
+        console.error("Error handling incoming negotiation:", error);
+      }
     },
     [socket]
   );
