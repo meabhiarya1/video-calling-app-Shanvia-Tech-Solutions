@@ -40,10 +40,31 @@ const Room = () => {
   );
 
   const sendStreams = useCallback(() => {
-    for (const track of myStream.getTracks()) {
-      peer.peer.addTrack(track, myStream);
+    try {
+      if (!myStream) {
+        throw new Error("No media stream available.");
+      }
+
+      for (const track of myStream.getTracks()) {
+        const senders = peer.peer.getSenders();
+
+        // Check if a sender already exists for the track
+        const existingSender = senders.find(
+          (sender) => sender.track?.id === track.id
+        );
+
+        if (!existingSender) {
+          peer.peer.addTrack(track, myStream);
+        } else {
+          console.warn("Sender already exists for track:", track.id);
+        }
+      }
+    } catch (error) {
+      console.error("Error sending streams:", error);
+      alert(`Error sending streams: ${error.message}`);
     }
   }, [myStream]);
+  
 
   const handleCallAccepted = useCallback(
     async ({ from, ans }) => {
@@ -51,10 +72,10 @@ const Room = () => {
         if (!ans) {
           throw new Error("Received an invalid answer for the call.");
         }
-  
+
         await peer.setLocalDescription(ans);
         console.log("Call Accepted!");
-  
+
         sendStreams();
       } catch (error) {
         console.error("Error in handleCallAccepted:", error);
@@ -62,7 +83,6 @@ const Room = () => {
     },
     [sendStreams]
   );
-  
 
   const handleNegoNeeded = useCallback(async () => {
     try {
