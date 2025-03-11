@@ -26,15 +26,35 @@ const Room = () => {
 
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
-      setRemoteSocketId(from);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      setMyStream(stream);
-      console.log(`Incoming Call`, from, offer);
-      const ans = await peer.getAnswer(offer);
-      socket.emit("call:accepted", { to: from, ans });
+      try {
+        setRemoteSocketId(from);
+
+        // Request user media
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: true,
+        });
+
+        if (!stream) {
+          throw new Error("Failed to access media devices.");
+        }
+
+        setMyStream(stream);
+        console.log(`Incoming Call from: ${from}`, offer);
+
+        // Generate answer for the offer
+        const ans = await peer.getAnswer(offer);
+
+        if (!ans) {
+          throw new Error("Failed to generate answer for the call.");
+        }
+
+        // Send the answer back
+        socket.emit("call:accepted", { to: from, ans });
+      } catch (error) {
+        console.error("Error handling incoming call:", error);
+        alert(`Error handling incoming call: ${error.message}`);
+      }
     },
     [socket]
   );
@@ -64,7 +84,6 @@ const Room = () => {
       alert(`Error sending streams: ${error.message}`);
     }
   }, [myStream]);
-  
 
   const handleCallAccepted = useCallback(
     async ({ from, ans }) => {
