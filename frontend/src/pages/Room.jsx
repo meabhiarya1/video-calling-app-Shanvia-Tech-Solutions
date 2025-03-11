@@ -137,25 +137,42 @@ const Room = () => {
       </div>
 
       {/* my stream and remote stream */}
-      <div className="flex flex-col md:flex-row justify-center items-center">
-        {/* my stream */}
-        <div className="flex flex-col justify-center w-[300px] h-[400px]">
-          <h3 className="text-white mx-4 text-center font-medium text-3xl p-2 my-2">
+      <div className="flex flex-col md:flex-row justify-center items-center gap-6 p-4">
+        {/* My Stream */}
+        <div className="flex flex-col items-center bg-gray-800 p-4 rounded-lg w-full md:w-[320px] h-[420px] shadow-lg border border-gray-700">
+          <h3 className="text-white text-center font-semibold text-2xl p-2">
             My Stream
           </h3>
-          <span className="m-0 ">
-            {myStream && <ReactPlayer url={myStream} playing muted />}
-          </span>
+          <div className="w-full h-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
+            {myStream ? (
+              <ReactPlayer
+                url={myStream}
+                playing
+                muted
+                className="w-full h-full"
+              />
+            ) : (
+              <p className="text-gray-400">No video</p>
+            )}
+          </div>
         </div>
 
-        {/* remote stream */}
-        <div className="flex flex-col justify-center">
-          <h3 className="text-white mx-4 text-center font-medium text-3xl p-2 my-2">
+        {/* Remote Stream */}
+        <div className="flex flex-col items-center bg-gray-800 p-4 rounded-lg w-[320px] h-[420px] shadow-lg border border-gray-700">
+          <h3 className="text-white text-center font-semibold text-2xl p-2">
             Remote Stream
           </h3>
-          <span className="m-0">
-            {remoteStream && <ReactPlayer url={remoteStream} playing />}
-          </span>
+          <div className="w-full h-full rounded-lg overflow-hidden bg-black flex items-center justify-center">
+            {remoteStream ? (
+              <ReactPlayer
+                url={remoteStream}
+                playing
+                className="w-full h-full"
+              />
+            ) : (
+              <p className="text-gray-400">Waiting for remote stream...</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
