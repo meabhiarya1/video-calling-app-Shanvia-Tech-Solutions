@@ -10,8 +10,17 @@ const Room = () => {
   const [remoteStream, setRemoteStream] = useState();
 
   const handleUserJoined = useCallback(({ email, id }) => {
-    console.log(`Email ${email} joined room`);
-    setRemoteSocketId(id);
+    try {
+      if (!email || !id) {
+        throw new Error("Invalid user data received.");
+      }
+
+      console.log(`Email ${email} joined room`);
+      setRemoteSocketId(id);
+    } catch (error) {
+      console.error("Error handling user joined:", error);
+      alert(`Error handling user joined: ${error.message}`);
+    }
   }, []);
 
   const handleCallUser = useCallback(async () => {
