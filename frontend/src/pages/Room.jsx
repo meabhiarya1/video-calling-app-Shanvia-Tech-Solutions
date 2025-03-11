@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from "react";
 import ReactPlayer from "react-player";
 import { useSocket } from "../providers/Socket";
 import peer from "../service/peer";
+import { toast } from "react-toastify";
 
 const Room = () => {
   const { socket } = useSocket();
@@ -19,7 +20,7 @@ const Room = () => {
       setRemoteSocketId(id);
     } catch (error) {
       console.error("Error handling user joined:", error);
-      alert(`Error handling user joined: ${error.message}`);
+      toast.error(`Error handling user joined: ${error.message}`);
     }
   }, []);
 
@@ -47,7 +48,7 @@ const Room = () => {
       setMyStream(stream);
     } catch (error) {
       console.error("Error initiating call:", error);
-      alert(`Error initiating call: ${error.message}`);
+      toast.error(`Error initiating call: ${error.message}`);
     }
   }, [remoteSocketId, socket]);
 
@@ -80,7 +81,7 @@ const Room = () => {
         socket.emit("call:accepted", { to: from, ans });
       } catch (error) {
         console.error("Error handling incoming call:", error);
-        alert(`Error handling incoming call: ${error.message}`);
+        toast.error(`Error handling incoming call: ${error.message}`);
       }
     },
     [socket]
@@ -104,11 +105,12 @@ const Room = () => {
           peer.peer.addTrack(track, myStream);
         } else {
           console.warn("Sender already exists for track:", track.id);
+          toast.warn("Sender already exists for track");
         }
       }
     } catch (error) {
       console.error("Error sending streams:", error);
-      alert(`Error sending streams: ${error.message}`);
+      toast.error(`Error sending streams: ${error.message}`);
     }
   }, [myStream]);
 
@@ -125,6 +127,7 @@ const Room = () => {
         sendStreams();
       } catch (error) {
         console.error("Error in handleCallAccepted:", error);
+        toast.error("Error in handleCallAccepted:", error);
       }
     },
     [sendStreams]
@@ -149,6 +152,7 @@ const Room = () => {
       console.log("Negotiation needed. Offer sent to", remoteSocketId);
     } catch (error) {
       console.error("Error in handleNegoNeeded:", error);
+      toast.error("Error in handleNegoNeeded:", error);
     }
   }, [remoteSocketId, socket]);
 
@@ -175,6 +179,7 @@ const Room = () => {
         console.log("Negotiation answer sent successfully.");
       } catch (error) {
         console.error("Error handling incoming negotiation:", error);
+        toast.error("Error handling incoming negotiation:", error);
       }
     },
     [socket]
@@ -189,6 +194,7 @@ const Room = () => {
       console.log("Negotiation finalized successfully.");
     } catch (error) {
       console.error("Error finalizing negotiation:", error);
+      toast.error("Error finalizing negotiation:", error);
     }
   }, []);
 
