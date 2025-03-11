@@ -71,7 +71,15 @@ const Room = () => {
   );
 
   const handleNegoNeededFinal = useCallback(async ({ ans }) => {
-    await peer.setLocalDescription(ans);
+    try {
+      if (!ans) {
+        throw new Error("Received an invalid answer for negotiation.");
+      }
+      await peer.setLocalDescription(ans);
+      console.log("Negotiation finalized successfully.");
+    } catch (error) {
+      console.error("Error finalizing negotiation:", error);
+    }
   }, []);
 
   useEffect(() => {
