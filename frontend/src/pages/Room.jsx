@@ -46,13 +46,23 @@ const Room = () => {
   }, [myStream]);
 
   const handleCallAccepted = useCallback(
-    ({ from, ans }) => {
-      peer.setLocalDescription(ans);
-      console.log("Call Accepted!");
-      sendStreams();
+    async ({ from, ans }) => {
+      try {
+        if (!ans) {
+          throw new Error("Received an invalid answer for the call.");
+        }
+  
+        await peer.setLocalDescription(ans);
+        console.log("Call Accepted!");
+  
+        sendStreams();
+      } catch (error) {
+        console.error("Error in handleCallAccepted:", error);
+      }
     },
     [sendStreams]
   );
+  
 
   const handleNegoNeeded = useCallback(async () => {
     try {
