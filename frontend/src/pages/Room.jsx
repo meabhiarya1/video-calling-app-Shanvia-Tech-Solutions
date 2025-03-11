@@ -105,7 +105,7 @@ const Room = () => {
           peer.peer.addTrack(track, myStream);
         } else {
           console.warn("Sender already exists for track:", track.id);
-          toast.warn("Sender already exists for track");
+          toast.warn("Sender should click on Send Streams");
         }
       }
     } catch (error) {
